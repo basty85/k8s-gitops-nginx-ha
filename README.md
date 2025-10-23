@@ -1,11 +1,11 @@
 # Learning Project Kubernetes HA Infrastructure
 
-🚀 **High-Availability Kubernetes Cluster Infrastructure**
+🚀 **High-Availability Kubernetes Cluster On-Premises Infrastructure**
 
 ## Repository Structure
 
 ```
-k8s-deployment/
+k8s-gitops-nginx-ha/
 ├── .gitignore                        # Git ignore patterns
 ├── README.md                         # This documentation
 ├── helm-charts/                      # Helm Charts (Source of Truth)
