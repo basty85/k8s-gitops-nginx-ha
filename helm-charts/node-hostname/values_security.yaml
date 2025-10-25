@@ -15,7 +15,7 @@ containerSecurityContext:
   runAsUser: 1001
   runAsGroup: 1001
   allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: true
+  readOnlyRootFilesystem: false
   capabilities:
     drop:
       - ALL
