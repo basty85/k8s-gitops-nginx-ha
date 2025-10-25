@@ -54,13 +54,13 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: {{ .Values.livenessProbe.httpGet.port | default .Values.app.port | default 8080 }}
+              port: {{ .Values.livenessProbe.httpGet.port | default .Values.app.port | default 3000 }}
         {{- end }}
         {{- with .Values.readinessProbe }}
           readinessProbe:
             httpGet:
               path: /
-              port: {{ .Values.readinessProbe.httpGet.port | default .Values.app.port | default 8080 }}
+              port: {{ .Values.readinessProbe.httpGet.port | default .Values.app.port | default 3000 }}
         {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
