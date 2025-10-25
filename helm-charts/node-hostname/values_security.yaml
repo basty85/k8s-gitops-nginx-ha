@@ -1,5 +1,3 @@
-
-
 # Resource limits (override base config)
 resources:
   limits:
@@ -25,14 +23,14 @@ containerSecurityContext:
 livenessProbe:
   httpGet:
     path: /
-    port: 80
+    port: 8080
   initialDelaySeconds: 30
   periodSeconds: 10
 
 readinessProbe:
   httpGet:
     path: /
-    port: 80
+    port: 8080
   initialDelaySeconds: 5
   periodSeconds: 5
 
