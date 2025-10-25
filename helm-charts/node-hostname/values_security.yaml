@@ -13,7 +13,6 @@ podSecurityContext:
 
 containerSecurityContext:
   runAsUser: 1001
-  runAsGroup: 1001
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: false
   capabilities:
@@ -42,7 +41,7 @@ affinity:
         podAffinityTerm:
           labelSelector:
             matchLabels:
-              app.kubernetes.io/name: nginx-website-chart
+              app.kubernetes.io/name: node-hostname-chart
           topologyKey: kubernetes.io/hostname
 
 # Node placement and tolerations (for advanced scheduling)
