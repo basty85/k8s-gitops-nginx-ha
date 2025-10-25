@@ -1,5 +1,4 @@
-# Security Overlay - Enterprise Hardening Features
-# Only contains security-specific overrides, not base configuration
+
 
 # Resource limits (override base config)
 resources:
