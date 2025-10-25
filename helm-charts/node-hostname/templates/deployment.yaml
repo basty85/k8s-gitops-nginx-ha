@@ -51,12 +51,16 @@ spec:
         ports:
         - containerPort: {{ .Values.service.port }}
         {{- with .Values.livenessProbe }}
-        livenessProbe:
-          {{- toYaml . | nindent 10 }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.livenessProbe.httpGet.port | default .Values.app.port | default 8080 }}
         {{- end }}
         {{- with .Values.readinessProbe }}
-        readinessProbe:
-          {{- toYaml . | nindent 10 }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.readinessProbe.httpGet.port | default .Values.app.port | default 8080 }}
         {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
