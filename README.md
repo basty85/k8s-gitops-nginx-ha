@@ -31,16 +31,17 @@ k8s-gitops-nginx-ha/
 ## Applications
 
 ### node-hostname
-- Node.js Express App, shows Hostname and Request-Infos
+- Node.js Express app that displays the hostname and request information
 - Exposed via Ingress at `node-hostname.sebastianmeyer.org`
-- Image from GitHub Container Registry (ghcr.io)
-- Authentication via imagePullSecret (`ghcr-cred`)
-- Helm chart with security overlay and anti-affinity
-- TLS via Ingress (same wildcard certificate as nginx-website)
+- Image pulled from GitHub Container Registry (ghcr.io) using an imagePullSecret (`ghcr-cred`)
+- Helm chart includes security overlay, anti-affinity, resource limits, and health probes
+- TLS via Ingress (using the same wildcard certificate as nginx-website)
+- Managed by ArgoCD (GitOps)
 
 ### nginx-website
 - Main demo website (static HTML, NGINX)
 - Exposed via Ingress at `sebastianmeyer.org`
+- Managed by ArgoCD (GitOps)
 
 ## Deployment Commands
 
@@ -72,13 +73,12 @@ microk8s helm3 upgrade nginx-website-dev \
 
 **🔄 ArgoCD automatically manages deployments from this Git repository**
 
-- ArgoCD Applications für beide Apps (`nginx-website`, `node-hostname`)
-- node-hostname verwendet imagePullSecret für ghcr.io
-- TLS-Zertifikat wird für beide Domains genutzt
+- ArgoCD Applications for both apps (`nginx-website`, `node-hostname`)
+- node-hostname uses an imagePullSecret for ghcr.io
+- The same TLS certificate is used for both domains
 
 ### ArgoCD Access:
-- **UI**: https://192.168.1.72
-- **Username**: `admin`
+- **UI**: https://192.168.1.70
 
 ### GitOps Process:
 1. **Make changes** in `helm-charts/nginx-website/`
@@ -129,11 +129,11 @@ microk8s kubectl get svc ingress-loadbalancer -n ingress
 - Traffic routing via Ingress Controller with host-based rules
 - SSL termination at Ingress level
 
-### Neu: node-hostname Helm-Chart
-- Eigene Chart-Struktur unter `helm-charts/node-hostname/`
-- SecurityContext, Anti-Affinity, Probes, Ressourcen-Limits
-- imagePullSecrets für private Registry
-- Ingress mit TLS und Hostname
+### New: node-hostname Helm Chart
+- Dedicated chart under `helm-charts/node-hostname/`
+- Includes SecurityContext, anti-affinity, health probes, resource limits
+- Uses imagePullSecrets for private registry authentication
+- Ingress with TLS and dedicated hostname
 
 ### Service Configuration:
 ```yaml
@@ -240,6 +240,18 @@ microk8s kubectl get svc ingress-loadbalancer -n ingress
 
 # Check cluster health (includes traffic flow visualization)
 ./monitoring/cluster-overview.sh
+```
+
+### node-hostname specific:
+```bash
+# Check imagePullSecret
+kubectl get secret ghcr-cred -n <namespace>
+
+# Check pod logs
+kubectl logs -l app.kubernetes.io/name=node-hostname-chart
+
+# Check Ingress TLS
+kubectl get secret node-hostname-tls -n <namespace>
 ```
 
 ### Rollback if needed:
