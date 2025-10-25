@@ -105,13 +105,13 @@ microk8s kubectl get svc ingress-loadbalancer -n ingress
 ## Architecture
 
 - **3-Node HA Cluster**: ubuntu-ha-cluster-1/2/3
-- **GitOps**: ArgoCD (https://192.168.1.72)
+- **GitOps**: ArgoCD (https://192.168.1.70)
 - **Ingress LoadBalancer**: MetalLB (192.168.1.71)
 - **Application Services**: ClusterIP (routed via Ingress)
-- **Ingress Controller**: NGINX mit SSL termination
-- **TLS**: Sectigo SSL Certificate (wird für beide Apps genutzt)
+- **Ingress Controller**: NGINX with SSL termination
+- **TLS**: Sectigo SSL Certificate for both domains
 - **Monitoring**: Enhanced cluster-overview script
-- **node-hostname**: Node.js Demo-App, zeigt Hostname, läuft als ReplicaSet mit Anti-Affinity
+- **node-hostname**: Node.js Demo-App, shows hostname, runs as ReplicaSet with Anti-Affinity
 
 ## Helm Chart Architecture Changes
 
