@@ -1,0 +1,85 @@
+# Default values for node-hostname-chart
+replicaCount: 3
+
+image:
+  repository: ghcr.io/basty85/node-hostname
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP  # Läuft über Ingress
+  port: 8080
+
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: node-hostname.sebastianmeyer.org
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: node-hostname-tls
+      hosts:
+        - node-hostname.sebastianmeyer.org
+
+# Application configuration
+app:
+  name: "Node.js Hostname Service"
+  description: "Shows hostname and request information"
+  port: 8080
+
+# Resource limits for Node.js app
+resources:
+  limits:
+    cpu: 200m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi
+
+# SecurityContext & Health Probes (defaults - can be overridden)
+podSecurityContext: {}
+  # fsGroup: 2000
+
+containerSecurityContext: {}
+  # runAsUser: 1001
+  # runAsGroup: 1001
+  # allowPrivilegeEscalation: false
+  # readOnlyRootFilesystem: false  # Node.js apps usually need write access
+  # capabilities:
+  #   drop:
+  #     - ALL
+
+livenessProbe: {}
+  # httpGet:
+  #   path: /
+  #   port: 8080
+  # initialDelaySeconds: 30
+  # periodSeconds: 10
+
+readinessProbe: {}
+  # httpGet:
+  #   path: /
+  #   port: 8080
+  # initialDelaySeconds: 5
+  # periodSeconds: 5
+
+# Pod placement and scheduling
+affinity: {}
+  # podAntiAffinity:
+  #   preferredDuringSchedulingIgnoredDuringExecution:
+  #     - weight: 100
+  #       podAffinityTerm:
+  #         labelSelector:
+  #           matchLabels:
+  #             app.kubernetes.io/name: node-hostname-chart
+  #         topologyKey: kubernetes.io/hostname
+
+nodeSelector: {}
+
+tolerations: []

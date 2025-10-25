@@ -1,0 +1,88 @@
+# RBAC for Website Developers
+# Can only manage NGINX Website, but not Ingress/ArgoCD
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: website-dev
+  labels:
+    team: frontend
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: website-dev
+  name: website-developer
+rules:
+# Manage Pods, Services, ConfigMaps
+- apiGroups: [""]
+  resources: ["pods", "services", "configmaps", "persistentvolumeclaims"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+# Secrets read-only (not create/delete)
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch"]
+# Manage Deployments
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+# Ingress read-only
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "watch"]
+# View Events (for debugging)
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: website-developer
+  namespace: website-dev
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: website-developer-binding
+  namespace: website-dev
+subjects:
+- kind: ServiceAccount
+  name: website-developer
+  namespace: website-dev
+# Here add real users:
+# - kind: User
+#   name: developer@sebastianmeyer.org
+#   apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: website-developer
+  apiGroup: rbac.authorization.k8s.io
+---
+# Cluster-wide Read-Only permissions for monitoring
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: basic-cluster-viewer
+rules:
+# View Nodes (for cluster overview)
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list", "watch"]
+# View Namespaces
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: website-developer-cluster-viewer
+subjects:
+- kind: ServiceAccount
+  name: website-developer
+  namespace: website-dev
+roleRef:
+  kind: ClusterRole
+  name: basic-cluster-viewer
+  apiGroup: rbac.authorization.k8s.io

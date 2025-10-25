@@ -1,0 +1,16 @@
+1. Get the application URL by running these commands:
+{{- if .Values.ingress.enabled }}
+{{- range $host := .Values.ingress.hosts }}
+  https://{{ $host.host }}/
+{{- end }}
+{{- else }}
+  http://{{ .Values.service.loadBalancerIP }}:{{ .Values.service.port }}
+{{- end }}
+
+2. Check the deployment status:
+  kubectl get deployment {{ include "nginx-website-chart.fullname" . }} --namespace {{ .Release.Namespace }}
+
+3. View the pods:
+  kubectl get pods -l "app.kubernetes.io/name={{ include "nginx-website-chart.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" --namespace {{ .Release.Namespace }}
+
+🚀 Sebastian Meyer's Kubernetes HA Website deployed successfully!

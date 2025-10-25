@@ -172,7 +172,7 @@ echo -e "🚀 NGINX Pods: ${GREEN}$total_nginx_pods/$target_nginx_pods Running${
 echo -e "🔗 Ingress Controllers: ${GREEN}$running_ingress/$desired_ingress Running${NC} (DaemonSet: 1 pro Node)"
 echo -e "⚖️  MetalLB Components: ${GREEN}$running_metallb/$desired_metallb Running${NC} ($desired_metallb_speakers Speakers + 1 Controller)"
 echo -e "🌐 Ingress LoadBalancer: $(microk8s kubectl get svc ingress-loadbalancer -n ingress --no-headers 2>/dev/null | awk '{print $4}' | grep -v '<none>' | wc -l)/1 Active"
-echo -e "📋 Ingress Rules: $(microk8s kubectl get ingress --no-headers | wc -l)/2 Configured"
+echo -e "📋 Ingress Rules: $(microk8s kubectl get ingress --all-namespaces --no-headers | wc -l)/1 Configured"
 
 # Website Test
 echo

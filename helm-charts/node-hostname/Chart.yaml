@@ -1,0 +1,16 @@
+apiVersion: v2
+name: node-hostname-chart
+description: A Helm chart for Node.js Hostname App - Titanic GmbH Coding Challenge
+type: application
+version: 1.0.0
+appVersion: "1.0"
+home: https://sebastianmeyer.org
+maintainers:
+  - name: Sebastian Meyer
+    email: s3bastian.meyer@gmail.org
+keywords:
+  - nodejs
+  - hostname
+  - challenge
+  - microservice
+  - kubernetes

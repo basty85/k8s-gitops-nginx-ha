@@ -1,0 +1,55 @@
+# Service Type Comparison Examples
+
+---
+# 1. ClusterIP (Internal Only)
+apiVersion: v1
+kind: Service
+metadata:
+  name: internal-service
+spec:
+  type: ClusterIP  # Default
+  selector:
+    app: nginx
+  ports:
+    - port: 80
+      targetPort: 80
+  # Result: 10.152.183.x:80 (cluster internal only)
+
+---
+# 2. NodePort (External via Node IP)
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeport-service
+spec:
+  type: NodePort
+  selector:
+    app: nginx
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080  # Optional, auto-assigned if not specified
+  # Result: 
+  # - ClusterIP: 10.152.183.x:80 (internal)
+  # - NodePort: 192.168.1.54:30080 (external via any node)
+  # - NodePort: 192.168.1.55:30080 (external via any node)
+  # - NodePort: 192.168.1.56:30080 (external via any node)
+
+---
+# 3. LoadBalancer (External via Load Balancer)
+apiVersion: v1
+kind: Service
+metadata:
+  name: loadbalancer-service
+spec:
+  type: LoadBalancer
+  loadBalancerIP: "192.168.1.73"  # Optional, MetalLB assigns if not specified
+  selector:
+    app: nginx
+  ports:
+    - port: 80
+      targetPort: 80
+  # Result:
+  # - ClusterIP: 10.152.183.x:80 (internal)
+  # - NodePort: Random port on all nodes (auto-created)
+  # - External-IP: 192.168.1.73:80 (load balancer managed)

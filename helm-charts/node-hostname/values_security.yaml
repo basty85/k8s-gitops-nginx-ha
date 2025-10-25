@@ -1,0 +1,54 @@
+# Security Overlay - Enterprise Hardening Features
+# Only contains security-specific overrides, not base configuration
+
+# Resource limits (override base config)
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+# SecurityContext & Health Probes
+podSecurityContext:
+  fsGroup: 2000
+
+containerSecurityContext:
+  runAsUser: 1001
+  runAsGroup: 1001
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: 80
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: 80
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+# Pod Anti-Affinity for High Availability
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: nginx-website-chart
+          topologyKey: kubernetes.io/hostname
+
+# Node placement and tolerations (for advanced scheduling)
+nodeSelector: {}
+
+tolerations: []
