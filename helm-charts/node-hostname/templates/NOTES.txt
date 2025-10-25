@@ -4,13 +4,13 @@
   https://{{ $host.host }}/
 {{- end }}
 {{- else }}
-  http://{{ .Values.service.loadBalancerIP }}:{{ .Values.service.port }}
+  # Kein LoadBalancer-IP definiert, Zugriff erfolgt über Ingress oder ClusterIP
 {{- end }}
 
 2. Check the deployment status:
-  kubectl get deployment {{ include "nginx-website-chart.fullname" . }} --namespace {{ .Release.Namespace }}
+  kubectl get deployment {{ include "node-hostname-chart.fullname" . }} --namespace {{ .Release.Namespace }}
 
 3. View the pods:
-  kubectl get pods -l "app.kubernetes.io/name={{ include "nginx-website-chart.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" --namespace {{ .Release.Namespace }}
+  kubectl get pods -l "app.kubernetes.io/name={{ include "node-hostname-chart.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" --namespace {{ .Release.Namespace }}
 
 🚀 Sebastian Meyer's Kubernetes HA Website deployed successfully!
