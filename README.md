@@ -1,4 +1,4 @@
-# Learning Project Kubernetes HA Infrastructure
+# Coding Challenge & Learning Project Kubernetes HA Infrastructure
 
 🚀 **High-Availability Kubernetes Cluster On-Premises Infrastructure**
 
@@ -9,7 +9,8 @@ k8s-gitops-nginx-ha/
 ├── .gitignore                        # Git ignore patterns
 ├── README.md                         # This documentation
 ├── helm-charts/                      # Helm Charts (Source of Truth)
-│   └── nginx-website/                # Main application chart
+│   ├── nginx-website/                # Main application chart
+│   └── node-hostname/                # Node.js Hostname Demo-App
 ├── environments/                     # Environment-specific configurations  
 │   └── production/                   # Production values
 ├── argocd/                           # GitOps configurations
@@ -27,17 +28,33 @@ k8s-gitops-nginx-ha/
     └── cluster-overview.sh           # Cluster health check script
 ```
 
+## Applications
+
+### node-hostname
+- Node.js Express App, shows Hostname and Request-Infos
+- Exposed via Ingress at `node-hostname.sebastianmeyer.org`
+- Image from GitHub Container Registry (ghcr.io)
+- Authentication via imagePullSecret (`ghcr-cred`)
+- Helm chart with security overlay and anti-affinity
+- TLS via Ingress (same wildcard certificate as nginx-website)
+
+### nginx-website
+- Main demo website (static HTML, NGINX)
+- Exposed via Ingress at `sebastianmeyer.org`
+
 ## Deployment Commands
 
 ### Production Deployment (Recommended):
 ```bash
-# Deploy with production values
+# Deploy nginx-website
 microk8s helm3 upgrade --install nginx-website \
   helm-charts/nginx-website/ \
   -f environments/production/values.yaml
 
-# Check status
-./monitoring/cluster-overview.sh
+# Deploy node-hostname
+microk8s helm3 upgrade --install node-hostname \
+  helm-charts/node-hostname/ \
+  -f environments/production/values.yaml
 ```
 
 ### Development/Testing:
@@ -54,6 +71,10 @@ microk8s helm3 upgrade nginx-website-dev \
 ## GitOps Workflow
 
 **🔄 ArgoCD automatically manages deployments from this Git repository**
+
+- ArgoCD Applications für beide Apps (`nginx-website`, `node-hostname`)
+- node-hostname verwendet imagePullSecret für ghcr.io
+- TLS-Zertifikat wird für beide Domains genutzt
 
 ### ArgoCD Access:
 - **UI**: https://192.168.1.72
@@ -85,11 +106,12 @@ microk8s kubectl get svc ingress-loadbalancer -n ingress
 
 - **3-Node HA Cluster**: ubuntu-ha-cluster-1/2/3
 - **GitOps**: ArgoCD (https://192.168.1.72)
-- **Ingress LoadBalancer**: MetalLB (192.168.1.71) - **Simplified Architecture**
+- **Ingress LoadBalancer**: MetalLB (192.168.1.71)
 - **Application Services**: ClusterIP (routed via Ingress)
-- **Ingress Controller**: NGINX with SSL termination
-- **TLS**: Sectigo SSL Certificate
-- **Monitoring**: Enhanced cluster-overview script with traffic flow visualization
+- **Ingress Controller**: NGINX mit SSL termination
+- **TLS**: Sectigo SSL Certificate (wird für beide Apps genutzt)
+- **Monitoring**: Enhanced cluster-overview script
+- **node-hostname**: Node.js Demo-App, zeigt Hostname, läuft als ReplicaSet mit Anti-Affinity
 
 ## Helm Chart Architecture Changes
 
@@ -106,6 +128,12 @@ microk8s kubectl get svc ingress-loadbalancer -n ingress
 - All applications use ClusterIP services  
 - Traffic routing via Ingress Controller with host-based rules
 - SSL termination at Ingress level
+
+### Neu: node-hostname Helm-Chart
+- Eigene Chart-Struktur unter `helm-charts/node-hostname/`
+- SecurityContext, Anti-Affinity, Probes, Ressourcen-Limits
+- imagePullSecrets für private Registry
+- Ingress mit TLS und Hostname
 
 ### Service Configuration:
 ```yaml
@@ -138,6 +166,11 @@ microk8s helm3 upgrade --install nginx-website \
   helm-charts/nginx-website/ \
   -f environments/production/values.yaml
 
+# Deploy node-hostname
+microk8s helm3 upgrade --install node-hostname \
+  helm-charts/node-hostname/ \
+  -f environments/production/values.yaml
+
 # Monitor cluster
 ./monitoring/cluster-overview.sh
 ```
@@ -147,6 +180,7 @@ microk8s helm3 upgrade --install nginx-website \
 - **Website**: https://sebastianmeyer.org
 - **Ingress LoadBalancer**: http://192.168.1.71 (local only - shows 404 for direct IP access)
 - **Monitoring**: ./monitoring/cluster-overview.sh
+- **node-hostname**: https://node-hostname.sebastianmeyer.org
 
 ## Traffic Flow Architecture
 
@@ -158,40 +192,6 @@ Ingress LoadBalancer (192.168.1.71)
     ↓ Host-Header: sebastianmeyer.org  
 NGINX Ingress Controller
     ↓ Route based on hostname
-nginx-website Pod (ClusterIP)
-```
-
-**Direct IP Access:**
-- ❌ `http://192.168.1.71` → HTTP 404 (expected - no host header)
-- ✅ `sebastianmeyer.org` → HTTP 308/200 (correct domain routing)
-
-## Prerequisites
-
-- MicroK8s v1.32+ with enabled addons:
-  - `microk8s enable dns ingress metallb cert-manager helm3`
-- Valid SSL certificate configured as Kubernetes secret:
-  ```bash
-  kubectl create secret tls nginx-tls \
-    --cert=path/to/certificate.crt \
-    --key=path/to/private.key
-  ```
-- MetalLB configured with IP range including `192.168.1.71` for ingress LoadBalancer
-- Ingress LoadBalancer service deployed:
-  ```bash
-  microk8s kubectl apply -f cluster-management/ingress-loadbalancer.yaml
-  ```
-
-## High Availability & Pod Scheduling
-
-### Failure Domains Configuration
-Configure failure domains for optimal HA resilience:
-
-```bash
-# Run on each VM to set individual failure domains
-./automation/configure-failure-domain.sh
-```
-
-This automatically detects the node and sets appropriate failure domains:
 - VM1 (192.168.1.54): failure-domain=1
 - VM2 (192.168.1.55): failure-domain=2  
 - VM3 (192.168.1.56): failure-domain=3
