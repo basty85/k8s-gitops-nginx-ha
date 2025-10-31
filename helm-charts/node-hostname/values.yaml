@@ -1,5 +1,5 @@
 # Default values for node-hostname-chart
-replicaCount: 3
+replicaCount: 6
 
 image:
   repository: ghcr.io/basty85/node-hostname
@@ -24,7 +24,7 @@ ingress:
         - path: /
           pathType: Prefix
   tls:
-    - secretName: node-hostname-tls
+    - secretName: nginx-tls
       hosts:
         - node-hostname.sebastianmeyer.org
 
@@ -56,7 +56,7 @@ containerSecurityContext: {}
   #   drop:
   #     - ALL
 
-
+# Check if still alive
 livenessProbe:
   httpGet:
     path: /
@@ -64,7 +64,7 @@ livenessProbe:
   initialDelaySeconds: 30
   periodSeconds: 10
 
-
+# Check ready to receive traffic
 readinessProbe:
   httpGet:
     path: /
@@ -72,7 +72,7 @@ readinessProbe:
   initialDelaySeconds: 5
   periodSeconds: 5
 
-# Pod placement and scheduling
+# New pod placement and scheduling
 affinity: {}
   # podAntiAffinity:
   #   preferredDuringSchedulingIgnoredDuringExecution:
