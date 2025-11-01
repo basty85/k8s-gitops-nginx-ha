@@ -13,8 +13,8 @@ podSecurityContext:
 
 containerSecurityContext:
   runAsUser: 1001
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: true # Advised to set true: Check if true possible for that app
+  readOnlyRootFilesystem: true # Advised to set true: Check if true possible for that app
   capabilities:
     drop:
       - ALL
@@ -33,7 +33,7 @@ readinessProbe:
   initialDelaySeconds: 5
   periodSeconds: 5
 
-# Pod Anti-Affinity for High Availability
+# Pod Anti-Affinity for High Availability (distribute pods with same name among nodes)
 affinity:
   podAntiAffinity:
     preferredDuringSchedulingIgnoredDuringExecution:
