@@ -5,8 +5,7 @@ metadata:
   name: {{ include "node-hostname-chart.fullname" . }}
   labels:
     {{- include "node-hostname-chart.labels" . | nindent 4 }}
-  annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  # No cert-manager annotation needed for static TLS secret
 spec:
   {{- if .Values.ingress.className }}
   ingressClassName: {{ .Values.ingress.className }}
@@ -28,12 +27,10 @@ spec:
     {{- end }}
   {{- if .Values.ingress.tls }}
   tls:
-    {{- range .Values.ingress.tls }}
     - hosts:
-        {{- range .hosts }}
+        {{- range .Values.ingress.tls[0].hosts }}
         - {{ . }}
         {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
+      secretName: {{ .Values.ingress.tls[0].secretName | quote }}
   {{- end }}
 {{- end }}
