@@ -3,7 +3,7 @@ replicaCount: 6
 
 image:
   repository: ghcr.io/basty85/node-hostname
-  pullPolicy: Always
+  pullPolicy: IfNotPresent # best practice: immutalbe tags
   tag: "v0.0.2"
 
 imagePullSecrets:
