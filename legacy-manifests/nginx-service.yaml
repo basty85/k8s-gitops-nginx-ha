@@ -8,4 +8,4 @@ spec:
   ports:
     - port: 80
       targetPort: 80
-  type: LoadBalancer
+  type: ClusterIP # should be ClusterIP. Because metallb provided external IP for ingress is single entrypoint, not service!

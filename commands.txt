@@ -30,16 +30,13 @@ microk8s kubectl patch application nginx-website-production -n argocd --type mer
 # Pod Distribution Checks:
 microk8s kubectl get pods -o wide -l "app.kubernetes.io/instance=nginx-website"   Check pod distribution across nodes
 
-Komplette Cluster-Übersicht:
+Complete cluster overview:
 microk8s kubectl get all -A -o wide
 
-microk8s kubectl top nodes
+microk8s kubectl top nodes:
 microk8s kubectl top pods -A --sort-by=cpu
 
-# Nur Ihre Apps:
-microk8s kubectl get pods,svc,ing -o wide
-
-# Nur LoadBalancer:
+# LoadBalancer only:
 microk8s kubectl get svc -A | grep LoadBalancer
 
 # Cluster-Health:
@@ -100,12 +97,12 @@ microk8s helm3 upgrade --install nginx-website helm-charts/nginx-website/ -f env
 # Development:
 microk8s helm3 install nginx-website-dev helm-charts/nginx-website/
 
-# Chart testen:
+# Chart test:
 microk8s helm3 lint helm-charts/nginx-website/
 
-# Status prüfen:
+# Check status:
 microk8s helm3 status nginx-website
 ./monitoring/cluster-overview.sh
 
-# Rollback bei Problemen:
+# Rollback when there are problems:
 microk8s helm3 rollback nginx-website 1
