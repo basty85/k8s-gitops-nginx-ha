@@ -14,11 +14,20 @@ service:
 ingress:
   enabled: true
   className: "nginx"
+  hosts:
+    - host: k8s.sebastianmeyer.org
+      paths:
+        - path: /
+          pathType: Prefix
+    - host: www.k8s.sebastianmeyer.org
+      paths:
+        - path: /
+          pathType: Prefix
   tls:
     - secretName: nginx-tls
       hosts:
-        - sebastianmeyer.org
-        - www.sebastianmeyer.org
+        - k8s.sebastianmeyer.org
+        - www.k8s.sebastianmeyer.org
 
 website:
   title: "Sebastian Meyer - Kubernetes HA Cluster"
