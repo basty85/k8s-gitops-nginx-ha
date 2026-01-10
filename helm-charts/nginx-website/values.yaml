@@ -22,15 +22,10 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
-    - host: www.k8s.sebastianmeyer.org
-      paths:
-        - path: /
-          pathType: Prefix
   tls:
     - secretName: nginx-tls
       hosts:
         - k8s.sebastianmeyer.org
-        - www.k8s.sebastianmeyer.org
 
 website:
   language: "de"
