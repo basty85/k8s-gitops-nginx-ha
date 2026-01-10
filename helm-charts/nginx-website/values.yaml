@@ -18,19 +18,19 @@ ingress:
   enabled: true
   className: "nginx"
   hosts:
-    - host: sebastianmeyer.org
+    - host: k8s.sebastianmeyer.org
       paths:
         - path: /
           pathType: Prefix
-    - host: www.sebastianmeyer.org
+    - host: www.k8s.sebastianmeyer.org
       paths:
         - path: /
           pathType: Prefix
   tls:
     - secretName: nginx-tls
       hosts:
-        - sebastianmeyer.org
-        - www.sebastianmeyer.org
+        - k8s.sebastianmeyer.org
+        - www.k8s.sebastianmeyer.org
 
 website:
   language: "de"
