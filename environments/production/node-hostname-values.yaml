@@ -1,0 +1,40 @@
+# Production Environment Values for Node-Hostname
+# These values override the defaults in helm-charts/node-hostname/values.yaml
+
+replicaCount: 6
+
+image:
+  tag: "v0.0.2"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: node-hostname.sebastianmeyer.org
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: nginx-tls
+      hosts:
+        - node-hostname.sebastianmeyer.org
+
+# Application configuration
+app:
+  name: "Node.js Hostname Service - Production"
+  description: "High-Availability Node.js service showing hostname and request information"
+  port: 3000
+
+# Production resource limits
+resources:
+  limits:
+    cpu: 200m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 64Mi
