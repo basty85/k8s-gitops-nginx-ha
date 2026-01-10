@@ -23,15 +23,10 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
-    - host: www.node-hostname.sebastianmeyer.org
-      paths:
-        - path: /
-          pathType: Prefix
   tls:
     - secretName: nginx-tls
       hosts:
         - node-hostname.sebastianmeyer.org
-        - www.node-hostname.sebastianmeyer.org
 
 # Application configuration
 app:
