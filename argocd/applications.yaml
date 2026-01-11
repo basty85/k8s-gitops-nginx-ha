@@ -13,7 +13,7 @@ spec:
     path: helm-charts/nginx-website
     helm:
       valueFiles:
-      - ../../environments/production/values.yaml
+      - ../../environments/production/nginx-website-values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: default
@@ -43,6 +43,7 @@ spec:
     helm:
       valueFiles:
       - values_security.yaml
+      - ../../environments/production/node-hostname-values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: default
