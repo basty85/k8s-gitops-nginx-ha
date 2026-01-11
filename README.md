@@ -184,12 +184,12 @@ microk8s helm3 upgrade --install node-hostname \
 
 ## Traffic Flow Architecture
 
-**Domain-based Traffic (Correct):**
+**Domain-based Traffic:**
 ```
 sebastianmeyer.org (DNS) 
     ↓ Resolve to 192.168.1.71
 Ingress LoadBalancer (192.168.1.71)
-    ↓ Host-Header: sebastianmeyer.org  
+    ↓ Host-Header: k8s.sebastianmeyer.org  
 NGINX Ingress Controller
     ↓ Route based on hostname
 - VM1 (192.168.1.54): failure-domain=1
