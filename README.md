@@ -30,17 +30,17 @@ k8s-gitops-nginx-ha/
 
 ## Applications
 
+### nginx-website
+- Main demo website for on-premises k8s deployment (static HTML, NGINX)
+- Exposed via Ingress at `k8s.sebastianmeyer.org`
+- Managed by ArgoCD (GitOps)
+
 ### node-hostname
 - Node.js Express app that displays the hostname and request information
 - Exposed via Ingress at `node-hostname.sebastianmeyer.org`
 - Image pulled from GitHub Container Registry (ghcr.io) using an imagePullSecret (`ghcr-cred`)
 - Helm chart includes security overlay, anti-affinity, resource limits, and health probes
 - TLS via Ingress (using the same wildcard certificate as nginx-website)
-- Managed by ArgoCD (GitOps)
-
-### nginx-website
-- Main demo website (static HTML, NGINX)
-- Exposed via Ingress at `sebastianmeyer.org`
 - Managed by ArgoCD (GitOps)
 
 ## Deployment Commands
@@ -177,7 +177,7 @@ microk8s helm3 upgrade --install node-hostname \
 
 ## Links
 
-- **Website**: https://sebastianmeyer.org
+- **K8s Website**: https://k8s.sebastianmeyer.org
 - **Ingress LoadBalancer**: http://192.168.1.71 (local only - shows 404 for direct IP access)
 - **Monitoring**: ./monitoring/cluster-overview.sh
 - **node-hostname**: https://node-hostname.sebastianmeyer.org
