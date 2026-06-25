@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: www-sebastianmeyer-redirect
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/permanent-redirect: "https://www.friendly-elf.de"
+    nginx.ingress.kubernetes.io/permanent-redirect-code: "301"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: www.sebastianmeyer.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-lb
+                port:
+                  number: 80
+    - host: sebastianmeyer.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-lb
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - www.sebastianmeyer.org
+        - sebastianmeyer.org
+      secretName: nginx-tls
