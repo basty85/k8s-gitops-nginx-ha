@@ -106,3 +106,24 @@ microk8s helm3 status nginx-website
 
 # Rollback when there are problems:
 microk8s helm3 rollback nginx-website 1
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# 🌐 DDNS / IONOS (Home WAN IP Drift)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Erstes Setup:
+cp automation/ddns/.env.example automation/ddns/.env
+nano automation/ddns/.env
+chmod +x automation/ddns/ddns-sync.sh
+
+# Manuell prüfen und ggf. DNS updaten:
+./automation/ddns/ddns-sync.sh
+
+# DNS vs Public IP prüfen:
+dig +short k8s.sebastianmeyer.org
+curl -4 -s https://ifconfig.me
+
+# Cronjob Beispiel (alle 5 Minuten):
+crontab -e
+# */5 * * * * /home/$USER/repos/k8s-gitops-nginx-ha/automation/ddns/ddns-sync.sh >> /tmp/ddns-sync-cron.log 2>&1

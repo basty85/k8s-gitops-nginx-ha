@@ -259,3 +259,35 @@ kubectl get secret node-hostname-tls -n <namespace>
 microk8s helm3 history nginx-website
 microk8s helm3 rollback nginx-website 1
 ```
+
+## Stable DynDNS (IONOS)
+
+If your home WAN IP changes, use a dedicated updater script on an always-on node.
+This is more reliable than router-only DDNS updates.
+
+### Files
+- `automation/ddns/ddns-sync.sh` - checks public IP vs DNS and updates provider if drift is detected
+- `automation/ddns/.env.example` - template for required variables
+
+### Setup
+```bash
+cp automation/ddns/.env.example automation/ddns/.env
+nano automation/ddns/.env
+chmod +x automation/ddns/ddns-sync.sh
+./automation/ddns/ddns-sync.sh
+```
+
+### Recommended DNS pattern
+- Create one primary A record, for example `home.yourdomain.tld`
+- Point app domains as CNAMEs to this record (`k8s`, `argocd`, `node-hostname`)
+- Keep TTL low (60 seconds) for fast propagation after IP changes
+
+### Cron example (every 5 minutes)
+```bash
+*/5 * * * * /home/$USER/repos/k8s-gitops-nginx-ha/automation/ddns/ddns-sync.sh >> /tmp/ddns-sync-cron.log 2>&1
+```
+
+### What this solves
+- DNS drift between current WAN IP and public record
+- Missing retries/visibility in router DDNS integrations
+- Better troubleshooting via explicit log output
